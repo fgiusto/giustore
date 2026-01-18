@@ -1,0 +1,19 @@
+curl \
+  -X POST 'http://localhost:7700/indexes' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer MASTER_KEY' \
+  --data '{
+    "uid": "products",
+    "primaryKey": "id"
+  }'
+
+
+curl \
+  -X POST 'http://localhost:7700/indexes/products/documents' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer MASTER_KEY' \
+  --data '{
+    "id": "1",
+    "title": "Laptop",
+    "description": "Fast and lightweight"
+  }'
