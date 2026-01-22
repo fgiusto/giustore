@@ -30,7 +30,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
-    private Integer id;
+    private Integer categoryId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
@@ -42,15 +42,15 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY)
-    private List<Category> childCategories;
+    private List<Category> subCategories;
 
     /**
      * Gets id.
      *
      * @return the id
      */
-    public Integer getId() {
-        return id;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
     /**
@@ -58,8 +58,8 @@ public class Category {
      *
      * @param id the id
      */
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCategoryId(Integer id) {
+        this.categoryId = id;
     }
 
     /**
@@ -103,8 +103,8 @@ public class Category {
      *
      * @return the child categories
      */
-    public List<Category> getChildCategories() {
-        return childCategories;
+    public List<Category> getSubCategories() {
+        return subCategories;
     }
 
     /**
@@ -112,7 +112,7 @@ public class Category {
      *
      * @param childCategories the child categories
      */
-    public void setChildCategories(List<Category> childCategories) {
-        this.childCategories = childCategories;
+    public void setSubCategories(List<Category> childCategories) {
+        this.subCategories = childCategories;
     }
 }
