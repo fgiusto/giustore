@@ -17,6 +17,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>giustore-core</module>
+        <module>giustore-search</module>
     </modules>
 
     <properties>
