@@ -1,24 +1,31 @@
 package at.giusto.giustore.core.commons.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import java.util.List;
 
 /**
- * The type Vendor.
+ * The type Owner.
  */
 @Entity
-@Table(name = "vendor")
-public class Vendor {
+@Table(name = "owner")
+public class Owner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vendor_id")
-    private Integer vendorId;
+    @Column(name = "owner_id")
+    private Integer ownerId;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "vendor")
+    @OneToMany(mappedBy = "owner")
     private List<Item> items;
 
     // getters and setters
@@ -28,8 +35,8 @@ public class Vendor {
      *
      * @return the id
      */
-    public Integer getVendorId() {
-        return vendorId;
+    public Integer getOwnerId() {
+        return ownerId;
     }
 
     /**
@@ -37,8 +44,8 @@ public class Vendor {
      *
      * @param id the id
      */
-    public void setVendorId(Integer id) {
-        this.vendorId = id;
+    public void setOwnerId(Integer id) {
+        this.ownerId = id;
     }
 
     /**

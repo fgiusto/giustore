@@ -1,6 +1,6 @@
 package at.giusto.giustore.core.commons.service.vendor;
 
-import at.giusto.giustore.core.commons.entity.Vendor;
+import at.giusto.giustore.core.commons.entity.Owner;
 import at.giusto.giustore.core.commons.exception.VendorAlreadyExistsException;
 import at.giusto.giustore.core.commons.exception.VendorNotFoundException;
 import at.giusto.giustore.core.commons.repository.VendorRepository;
@@ -31,7 +31,7 @@ public class VendorService {
      * @param vendorId the vendor id
      * @return the vendor
      */
-    public Vendor getVendor(int vendorId) {
+    public Owner getVendor(int vendorId) {
         return findVendor(vendorId).orElseThrow(() -> new VendorNotFoundException(vendorId));
     }
 
@@ -41,7 +41,7 @@ public class VendorService {
      * @param name the name
      * @return the vendor
      */
-    public Vendor addVendor(String name) {
+    public Owner addVendor(String name) {
         // search name
         if (isVendorNameExists(name)) {
             throw new VendorAlreadyExistsException(name);
@@ -56,7 +56,7 @@ public class VendorService {
      * @param vendorId the vendor id
      */
     public void deleteVendor(int vendorId) {
-        Vendor found = getVendor(vendorId);
+        Owner found = getVendor(vendorId);
         vendorRepository.delete(found);
     }
 
@@ -67,8 +67,8 @@ public class VendorService {
      * @param newName  the new name
      * @return the vendor
      */
-    public Vendor updateVendor(int vendorId, String newName) {
-        Vendor found = getVendor(vendorId);
+    public Owner updateVendor(int vendorId, String newName) {
+        Owner found = getVendor(vendorId);
         found.setName(newName);
         return save(found);
     }
@@ -77,23 +77,23 @@ public class VendorService {
         return findVendor(name).isPresent();
     }
 
-    private Optional<Vendor> findVendor(String name) {
+    private Optional<Owner> findVendor(String name) {
         return vendorRepository.findByName(name);
     }
 
-    private Vendor buildVendor(String name) {
-        Vendor vendor = new Vendor();
+    private Owner buildVendor(String name) {
+        Owner owner = new Owner();
 
-        vendor.setName(name);
+        owner.setName(name);
 
-        return vendor;
+        return owner;
     }
 
-    private Optional<Vendor> findVendor(int vendorId) {
+    private Optional<Owner> findVendor(int vendorId) {
         return vendorRepository.findById(vendorId);
     }
 
-    private Vendor save(Vendor vendor) {
-        return vendorRepository.save(vendor);
+    private Owner save(Owner owner) {
+        return vendorRepository.save(owner);
     }
 }

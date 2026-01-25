@@ -1,6 +1,6 @@
 package at.giusto.giustore.core.commons.repository;
 
-import at.giusto.giustore.core.commons.entity.Vendor;
+import at.giusto.giustore.core.commons.entity.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
  * The interface Vendor repository.
  */
 @Repository
-public interface VendorRepository extends JpaRepository<Vendor, Integer> {
+public interface VendorRepository extends JpaRepository<Owner, Integer> {
 
     /**
      * Find by name optional.
@@ -18,5 +18,5 @@ public interface VendorRepository extends JpaRepository<Vendor, Integer> {
      * @param name the name
      * @return the optional
      */
-    Optional<Vendor> findByName(String name);
+    Optional<Owner> findByName(String name);
 }

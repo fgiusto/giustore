@@ -1,5 +1,16 @@
 package at.giusto.giustore.core.commons.entity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 
 /**
@@ -9,7 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "item",
         indexes = {
                 @Index(name = "idx_item_category", columnList = "category_id"),
-                @Index(name = "idx_item_vendor", columnList = "vendor_id")
+                @Index(name = "idx_item_owner", columnList = "owner_id")
         })
 public class Item {
 
@@ -25,10 +36,10 @@ public class Item {
     private Category category;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "vendor_id",
+    @JoinColumn(name = "owner_id",
             nullable = false,
-            foreignKey = @ForeignKey(name = "fk_item_vendor"))
-    private Vendor vendor;
+            foreignKey = @ForeignKey(name = "fk_item_owner"))
+    private Owner owner;
 
     @Column(name = "title", nullable = false, length = 255)
     private String title;
@@ -81,21 +92,21 @@ public class Item {
     }
 
     /**
-     * Gets vendor.
+     * Gets owner.
      *
-     * @return the vendor
+     * @return the owner
      */
-    public Vendor getVendor() {
-        return vendor;
+    public Owner getOwner() {
+        return owner;
     }
 
     /**
-     * Sets vendor.
+     * Sets owner.
      *
-     * @param vendor the vendor
+     * @param owner the owner
      */
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
+    public void setOwner(Owner owner) {
+        this.owner = owner;
     }
 
     /**
