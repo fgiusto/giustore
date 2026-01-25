@@ -1,4 +1,4 @@
-package at.giustore.search.commons.record;
+package at.giusto.giustore.search.commons.record;
 
 /**
  * The type Item document.

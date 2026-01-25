@@ -1,8 +1,7 @@
-package at.giustore.search.commons.repository;
+package at.giusto.giustore.search.commons.repository;
 
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.model.SearchResult;
-import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
  *
  * @param <T> the type parameter
  */
-@Service
 public class MeiliRepositoryImpl<T> implements MeiliRepository<T> {
 
     private final Client client;

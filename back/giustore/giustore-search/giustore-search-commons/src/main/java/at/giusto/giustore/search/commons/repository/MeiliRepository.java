@@ -1,4 +1,4 @@
-package at.giustore.search.commons.repository;
+package at.giusto.giustore.search.commons.repository;
 
 import com.meilisearch.sdk.model.SearchResult;
 
