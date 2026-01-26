@@ -17,9 +17,4 @@
         <module>giustore-search-app</module>
     </modules>
 
-    <properties>
-        <meilisearch.version>0.18.0</meilisearch.version>
-        <jackson-databind.version>3.0.4</jackson-databind.version>
-    </properties>
-
 </project>
