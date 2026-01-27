@@ -29,6 +29,11 @@ public class ItemDocumentRestController {
 
     @GetMapping("/search")
     public SearchHits<ItemDocument> search(@RequestParam String query) {
-        return itemSearchService.search(new ItemSearchRequest("lap", null, null, 0, 10));
+        return itemSearchService.search(new ItemSearchRequest(query, null, null, 0, 10));
+    }
+
+    @GetMapping("/search/test")
+    public SearchHits<ItemDocument> searchTest() {
+        return itemSearchService.search(new ItemSearchRequest("test", null, null, 0, 10));
     }
 }
