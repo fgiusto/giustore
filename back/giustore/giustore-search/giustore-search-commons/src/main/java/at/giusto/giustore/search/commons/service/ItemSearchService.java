@@ -1,12 +1,9 @@
 package at.giusto.giustore.search.commons.service;
 
 import at.giusto.giustore.search.commons.entity.ItemDocument;
-import at.giusto.giustore.search.commons.record.ItemSearchRequest;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import at.giusto.giustore.search.commons.repository.ItemDocumentRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 
@@ -15,57 +12,18 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ItemSearchService {
+    private final ItemDocumentRepository itemDocumentRepository;
 
-    private final ElasticsearchOperations operations;
-
-    public ItemSearchService(ElasticsearchOperations operations) {
-        this.operations = operations;
+    /**
+     * Instantiates a new Item search service.
+     *
+     * @param itemDocumentRepository the item document repository
+     */
+    public ItemSearchService(ItemDocumentRepository itemDocumentRepository) {
+        this.itemDocumentRepository = itemDocumentRepository;
     }
 
-    public SearchHits<ItemDocument> search(ItemSearchRequest req) {
-
-        BoolQuery.Builder bool = new BoolQuery.Builder();
-
-        // Full-text search
-        if (req.text() != null && !req.text().isBlank()) {
-            bool.must(m -> m
-                    .multiMatch(mm -> mm
-                            .query(req.text())
-                            .fields("title", "description")
-                    )
-            );
-        }
-
-        // Filter by category
-        if (req.categoryId() != null) {
-            bool.filter(f -> f
-                    .term(t -> t
-                            .field("category.id")
-                            .value(req.categoryId())
-                    )
-            );
-        }
-
-        // Filter by owner
-        if (req.ownerId() != null) {
-            bool.filter(f -> f
-                    .term(t -> t
-                            .field("owner.id")
-                            .value(req.ownerId())
-                    )
-            );
-        }
-
-        NativeQuery query = NativeQuery.builder()
-                .withQuery(bool.build()._toQuery())
-                .withPageable(
-                        PageRequest.of(
-                                req.page() == null ? 0 : req.page(),
-                                req.size() == null ? 10 : req.size()
-                        )
-                )
-                .build();
-
-        return operations.search(query, ItemDocument.class);
+    public Page<ItemDocument> search(String query) {
+        return itemDocumentRepository.searchSimilar(new ItemDocument(query, query), null, PageRequest.of(0, 10));
     }
 }

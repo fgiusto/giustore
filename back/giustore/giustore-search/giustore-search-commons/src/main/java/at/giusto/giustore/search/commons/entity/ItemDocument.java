@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 /**
  * The type Item document.
  */
-@Document(indexName = "items")
+@Document(indexName = "items", createIndex = false)
 public class ItemDocument {
     @Id
     private String id;
@@ -25,6 +25,17 @@ public class ItemDocument {
      * Instantiates a new Item document.
      */
     public ItemDocument() {
+    }
+
+    /**
+     * Instantiates a new Item document.
+     *
+     * @param title       the title
+     * @param description the description
+     */
+    public ItemDocument(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
 
     /**
