@@ -2,9 +2,9 @@ package at.giusto.giustore.search.commons.service;
 
 import at.giusto.giustore.search.commons.entity.ItemDocument;
 import at.giusto.giustore.search.commons.repository.ItemDocumentRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 /**
@@ -23,7 +23,13 @@ public class ItemSearchService {
         this.itemDocumentRepository = itemDocumentRepository;
     }
 
-    public Page<ItemDocument> search(String query) {
-        return itemDocumentRepository.searchSimilar(new ItemDocument(query, query), null, PageRequest.of(0, 10));
+    /**
+     * Search list.
+     *
+     * @param query the query
+     * @return the list
+     */
+    public List<ItemDocument> search(String query) {
+        return itemDocumentRepository.fuzzySearch(query);
     }
 }

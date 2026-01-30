@@ -42,4 +42,14 @@ public class ItemSaveService {
     public ItemDocument save(CreateItemRequest createItemRequest) {
         return save(createItemRequest.title(), createItemRequest.description());
     }
+
+    /**
+     * Save item document.
+     *
+     * @param itemDocument the item document
+     * @return the item document
+     */
+    public ItemDocument save(ItemDocument itemDocument) {
+        return itemDocumentRepository.save(itemDocument);
+    }
 }
