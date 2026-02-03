@@ -1,103 +1,244 @@
+import { useMemo, useState } from 'react'
 import './App.css'
 
+const API_BASE =
+  import.meta.env.VITE_SEARCH_API_BASE ??
+  'http://localhost:8080/search/api/items/search'
+const SEARCH_ENDPOINT = API_BASE.replace(/\/$/, '')
+
+const suggestedQueries = [
+  'organic honey',
+  'sourdough bread',
+  'mediterranean olives',
+  'stone fruit',
+  'oat milk',
+]
+
 function App() {
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState([])
+  const [status, setStatus] = useState('idle')
+  const [error, setError] = useState('')
+  const [searchTimeMs, setSearchTimeMs] = useState(null)
+
+  const trimmedQuery = query.trim()
+  const hasSearched = status === 'success' || status === 'error'
+  const hasResults = status === 'success' && results.length > 0
+
+  const headline = useMemo(() => {
+    if (hasSearched) {
+      return 'Search the Giustore catalog'
+    }
+    return 'Find groceries like you find answers.'
+  }, [hasSearched])
+
+  const runSearch = async (value) => {
+    if (!value) {
+      return
+    }
+
+    const start = performance.now()
+    setStatus('loading')
+    setError('')
+
+    try {
+      const response = await fetch(
+        `${SEARCH_ENDPOINT}?query=${encodeURIComponent(value)}`,
+      )
+
+      if (!response.ok) {
+        throw new Error(`Search failed (${response.status})`)
+      }
+
+      const payload = await response.json()
+      const elapsed = Math.round(performance.now() - start)
+
+      setResults(Array.isArray(payload) ? payload : [])
+      setSearchTimeMs(elapsed)
+      setStatus('success')
+    } catch (err) {
+      setResults([])
+      setSearchTimeMs(null)
+      setStatus('error')
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong with the search request.',
+      )
+    }
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    runSearch(trimmedQuery)
+  }
+
+  const handleSuggestionClick = (value) => {
+    setQuery(value)
+    runSearch(value)
+  }
+
+  const handleClear = () => {
+    setQuery('')
+    setResults([])
+    setStatus('idle')
+    setError('')
+    setSearchTimeMs(null)
+  }
+
   return (
-    <div className="app">
-      <div className="glow" aria-hidden="true"></div>
+    <div className={`app ${hasSearched ? 'app--searched' : ''}`}>
       <header className="topbar">
         <div className="brand">
-          <div className="brand-mark">G</div>
+          <div className="brand-mark">g</div>
           <div>
-            <div className="brand-name">giustore</div>
-            <div className="brand-tag">Grocery that feels local and fast</div>
+            <div className="brand-name">giustore search</div>
+            <div className="brand-tag">Local inventory, global speed</div>
           </div>
         </div>
-        <nav className="nav">
-          <a href="#" className="nav-link">Shop</a>
-          <a href="#" className="nav-link">Deals</a>
-          <a href="#" className="nav-link">Partners</a>
-          <button className="nav-cta">Get the app</button>
-        </nav>
+        <div className="status-pill">Powered by the Giustore search API</div>
       </header>
 
       <main className="hero">
-        <section className="hero-copy">
-          <p className="eyebrow">Fresh pantry in 30 minutes</p>
-          <h1>Stock the kitchen with seasonal goods and everyday essentials.</h1>
+        <div className="hero-copy">
+          <p className="eyebrow">Search smarter</p>
+          <h1>{headline}</h1>
           <p className="lead">
-            Giustore connects you to neighborhood suppliers, with smart substitutions,
-            clear pricing, and delivery windows you can count on.
+            Type a query, press enter, and get fast, relevant results from your
+            own backend search stack.
           </p>
-          <div className="cta-row">
-            <button className="primary">Start a basket</button>
-            <button className="ghost">Browse weekly specials</button>
-          </div>
-          <div className="trust">
-            <div className="trust-item">
-              <span className="trust-value">4.9</span>
-              <span className="trust-label">average rating</span>
+        </div>
+
+        <section className="search-shell">
+          <form className="search-bar" onSubmit={handleSubmit}>
+            <div className="search-input">
+              <span className="search-icon" aria-hidden="true">
+                search
+              </span>
+              <input
+                type="search"
+                placeholder="Search for groceries, brands, and staples"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                aria-label="Search Giustore"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={handleClear}
+                  aria-label="Clear search"
+                >
+                  x
+                </button>
+              )}
             </div>
-            <div className="trust-item">
-              <span className="trust-value">120+</span>
-              <span className="trust-label">local producers</span>
+            <div className="search-actions">
+              <button className="primary" type="submit">
+                Search
+              </button>
+              <button
+                className="ghost"
+                type="button"
+                onClick={() =>
+                  handleSuggestionClick(
+                    suggestedQueries[
+                      Math.floor(Math.random() * suggestedQueries.length)
+                    ],
+                  )
+                }
+              >
+                I'm feeling local
+              </button>
             </div>
-            <div className="trust-item">
-              <span className="trust-value">30 min</span>
-              <span className="trust-label">delivery promise</span>
-            </div>
+          </form>
+
+          <div className="suggestions">
+            {suggestedQueries.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className="chip"
+                onClick={() => handleSuggestionClick(item)}
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </section>
 
-        <section className="hero-card">
-          <div className="card-header">
-            <span>Tonight's basket</span>
-            <span className="pill">Delivered 6:20 pm</span>
-          </div>
-          <ul className="item-list">
-            <li>
-              <span>Heirloom tomatoes</span>
-              <span>$6.40</span>
-            </li>
-            <li>
-              <span>Herb focaccia</span>
-              <span>$5.80</span>
-            </li>
-            <li>
-              <span>Baby greens</span>
-              <span>$4.10</span>
-            </li>
-            <li>
-              <span>Citrus sparkling water</span>
-              <span>$3.50</span>
-            </li>
-          </ul>
-          <div className="card-footer">
-            <div>
-              <div className="price-label">Estimated total</div>
-              <div className="price">$42.80</div>
+        <section className="results">
+          {status === 'loading' && (
+            <div className="results-state">
+              <div className="loader" aria-hidden="true"></div>
+              <div>Searching your catalog...</div>
             </div>
-            <button className="primary small">Check out</button>
-          </div>
+          )}
+
+          {status === 'error' && (
+            <div className="results-state error">
+              <div className="state-title">We hit a snag.</div>
+              <p>{error}</p>
+              <p className="state-hint">
+                Verify that the search service is running at{' '}
+                <span className="mono">{SEARCH_ENDPOINT}</span>.
+              </p>
+            </div>
+          )}
+
+          {status === 'success' && (
+            <>
+              <div className="results-meta">
+                <span>
+                  {results.length} results
+                  {searchTimeMs !== null ? ` in ${searchTimeMs} ms` : ''}
+                </span>
+                <span className="results-query">
+                  Showing matches for "{trimmedQuery}"
+                </span>
+              </div>
+
+              {hasResults ? (
+                <div className="results-list">
+                  {results.map((item, index) => (
+                    <article
+                      key={item.id ?? `${item.title}-${index}`}
+                      className="result-card"
+                    >
+                      <div className="result-header">
+                        <div className="result-title">{item.title}</div>
+                        {item.category?.name && (
+                          <span className="pill">{item.category.name}</span>
+                        )}
+                      </div>
+                      <p className="result-description">
+                        {item.description || 'No description available yet.'}
+                      </p>
+                      <div className="result-footer">
+                        <span>
+                          Owner:{' '}
+                          <strong>
+                            {item.owner?.name ?? 'Giustore inventory'}
+                          </strong>
+                        </span>
+                        {item.id && <span className="mono">#{item.id}</span>}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="results-state empty">
+                  <div className="state-title">No matches found.</div>
+                  <p>Try a different wording or a broader term.</p>
+                </div>
+              )}
+            </>
+          )}
         </section>
       </main>
 
-      <section className="features">
-        <div className="feature-card">
-          <h3>Curated freshness</h3>
-          <p>Handpicked produce with daily quality checks and seasonal spotlights.</p>
-        </div>
-        <div className="feature-card">
-          <h3>Smart substitutions</h3>
-          <p>Approve swaps ahead of time so your order stays on budget.</p>
-        </div>
-        <div className="feature-card">
-          <h3>Neighborhood partners</h3>
-          <p>Support bakeries, butchers, and growers within a few miles.</p>
-        </div>
-      </section>
-
       <footer className="footer">
-        Built for Giustore customers who value quality, speed, and local craft.
+        Giustore Search - Built for fast, local discovery.
       </footer>
     </div>
   )
