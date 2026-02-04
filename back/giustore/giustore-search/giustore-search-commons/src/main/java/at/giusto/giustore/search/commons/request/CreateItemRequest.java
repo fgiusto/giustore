@@ -5,6 +5,7 @@ package at.giusto.giustore.search.commons.request;
  */
 public record CreateItemRequest(
         String title,
-        String description
+        String description,
+        String videoUrl
 ) {
 }

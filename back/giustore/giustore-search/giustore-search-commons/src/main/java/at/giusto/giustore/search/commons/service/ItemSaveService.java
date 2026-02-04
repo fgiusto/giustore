@@ -40,7 +40,9 @@ public class ItemSaveService {
      * @return the item document
      */
     public ItemDocument save(CreateItemRequest createItemRequest) {
-        return save(createItemRequest.title(), createItemRequest.description());
+        ItemDocument itemDocument = new ItemDocument(createItemRequest.title(), createItemRequest.description());
+        itemDocument.setVideoUrl(createItemRequest.videoUrl());
+        return itemDocumentRepository.save(itemDocument);
     }
 
     /**

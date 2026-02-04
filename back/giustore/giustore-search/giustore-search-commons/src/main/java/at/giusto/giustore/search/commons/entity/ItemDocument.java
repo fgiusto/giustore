@@ -20,6 +20,7 @@ public class ItemDocument {
     private OwnerDocument owner;
     private String title;
     private String description;
+    private String videoUrl;
 
     /**
      * Instantiates a new Item document.
@@ -36,6 +37,19 @@ public class ItemDocument {
     public ItemDocument(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    /**
+     * Instantiates a new Item document.
+     *
+     * @param title       the title
+     * @param description the description
+     * @param videoUrl    the video url
+     */
+    public ItemDocument(String title, String description, String videoUrl) {
+        this.title = title;
+        this.description = description;
+        this.videoUrl = videoUrl;
     }
 
     /**
@@ -126,5 +140,23 @@ public class ItemDocument {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Gets video url.
+     *
+     * @return the video url
+     */
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    /**
+     * Sets video url.
+     *
+     * @param videoUrl the video url
+     */
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

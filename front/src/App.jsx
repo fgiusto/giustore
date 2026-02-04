@@ -14,6 +14,31 @@ const suggestedQueries = [
   'oat milk',
 ]
 
+const getYoutubeEmbedUrl = (url) => {
+  if (!url) {
+    return null
+  }
+
+  try {
+    const parsed = new URL(url)
+    const host = parsed.hostname.replace(/^www\./, '')
+
+    if (host === 'youtu.be') {
+      const id = parsed.pathname.replace('/', '').trim()
+      return id ? `https://www.youtube.com/embed/${id}` : null
+    }
+
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      const id = parsed.searchParams.get('v')
+      return id ? `https://www.youtube.com/embed/${id}` : null
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
@@ -200,31 +225,64 @@ function App() {
 
               {hasResults ? (
                 <div className="results-list">
-                  {results.map((item, index) => (
-                    <article
-                      key={item.id ?? `${item.title}-${index}`}
-                      className="result-card"
-                    >
-                      <div className="result-header">
-                        <div className="result-title">{item.title}</div>
-                        {item.category?.name && (
-                          <span className="pill">{item.category.name}</span>
-                        )}
-                      </div>
-                      <p className="result-description">
-                        {item.description || 'No description available yet.'}
-                      </p>
-                      <div className="result-footer">
-                        <span>
-                          Owner:{' '}
-                          <strong>
-                            {item.owner?.name ?? 'Giustore inventory'}
-                          </strong>
-                        </span>
-                        {item.id && <span className="mono">#{item.id}</span>}
-                      </div>
-                    </article>
-                  ))}
+                  {results.map((item, index) => {
+                    const youtubeEmbedUrl = getYoutubeEmbedUrl(item.videoUrl)
+                    return (
+                      <article
+                        key={item.id ?? `${item.title}-${index}`}
+                        className="result-card"
+                      >
+                        <div className="result-body">
+                          <div className="result-details">
+                            <div className="result-header">
+                              <div className="result-title">{item.title}</div>
+                              {item.category?.name && (
+                                <span className="pill">
+                                  {item.category.name}
+                                </span>
+                              )}
+                            </div>
+                            <p className="result-description">
+                              {item.description ||
+                                'No description available yet.'}
+                            </p>
+                            <div className="result-footer">
+                              <span>
+                                Owner:{' '}
+                                <strong>
+                                  {item.owner?.name ?? 'Giustore inventory'}
+                                </strong>
+                              </span>
+                              {item.id && (
+                                <span className="mono">#{item.id}</span>
+                              )}
+                            </div>
+                          </div>
+                          {(youtubeEmbedUrl || item.videoUrl) && (
+                            <div className="result-media">
+                              {youtubeEmbedUrl ? (
+                                <iframe
+                                  src={youtubeEmbedUrl}
+                                  title={`${item.title ?? 'Item'} video`}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              ) : (
+                                <video
+                                  src={item.videoUrl}
+                                  controls
+                                  preload="metadata"
+                                  playsInline
+                                >
+                                  Your browser does not support the video tag.
+                                </video>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </article>
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="results-state empty">
