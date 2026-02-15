@@ -1,19 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-
-:root {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #1b1b1b;
-  background-color: #f6f2ea;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 * {
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Open Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #eaeaea;
+  color: #1a1a1a;
 }
 
 a {
@@ -21,30 +21,12 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  color: inherit;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background:
-    linear-gradient(120deg, rgba(255, 250, 241, 0.8), rgba(239, 246, 255, 0.6)),
-    repeating-linear-gradient(
-      135deg,
-      rgba(17, 17, 17, 0.03) 0px,
-      rgba(17, 17, 17, 0.03) 1px,
-      transparent 1px,
-      transparent 12px
-    ),
-    #f6f2ea;
-}
-
 img {
   max-width: 100%;
   display: block;
 }
 
-button {
-  font-family: inherit;
+button,
+input {
+  font: inherit;
 }

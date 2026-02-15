@@ -6,12 +6,16 @@ const API_BASE =
   'http://localhost:8080/search/api/items/search'
 const SEARCH_ENDPOINT = API_BASE.replace(/\/$/, '')
 
-const suggestedQueries = [
-  'organic honey',
-  'sourdough bread',
-  'mediterranean olives',
-  'stone fruit',
-  'oat milk',
+const navItems = [
+  'ACCUEIL',
+  'NOS METIERS',
+  'GROUPE GIUSTORE',
+  'NEWS & PROMOS',
+  'AGENCES',
+  'NOS MARQUES',
+  'ACCES PRO',
+  'CONTACT',
+  'NOS CATALOGUES',
 ]
 
 const getYoutubeEmbedUrl = (url) => {
@@ -45,6 +49,7 @@ function App() {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
   const [searchTimeMs, setSearchTimeMs] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const trimmedQuery = query.trim()
   const hasSearched = status === 'success' || status === 'error'
@@ -52,9 +57,9 @@ function App() {
 
   const headline = useMemo(() => {
     if (hasSearched) {
-      return 'Search the Giustore catalog'
+      return 'Recherchez dans le catalogue Giustore'
     }
-    return 'Find groceries like you find answers.'
+    return 'Trouvez vos produits en quelques secondes.'
   }, [hasSearched])
 
   const runSearch = async (value) => {
@@ -72,7 +77,7 @@ function App() {
       )
 
       if (!response.ok) {
-        throw new Error(`Search failed (${response.status})`)
+        throw new Error(`La recherche a echoue (${response.status})`)
       }
 
       const payload = await response.json()
@@ -88,7 +93,7 @@ function App() {
       setError(
         err instanceof Error
           ? err.message
-          : 'Something went wrong with the search request.',
+          : 'Une erreur est survenue lors de la requete de recherche.',
       )
     }
   }
@@ -98,114 +103,91 @@ function App() {
     runSearch(trimmedQuery)
   }
 
-  const handleSuggestionClick = (value) => {
-    setQuery(value)
-    runSearch(value)
-  }
-
-  const handleClear = () => {
-    setQuery('')
-    setResults([])
-    setStatus('idle')
-    setError('')
-    setSearchTimeMs(null)
-  }
-
   return (
-    <div className={`app ${hasSearched ? 'app--searched' : ''}`}>
-      <header className="topbar">
-        <div className="brand">
-          <div className="brand-mark">g</div>
-          <div>
-            <div className="brand-name">giustore search</div>
-            <div className="brand-tag">Local inventory, global speed</div>
+    <div className="app">
+      <header className="pastor-header">
+        <div className="brand-strip">
+          <div className="brand-main">Giustore</div>
+          <div className="brand-side">
+            <div className="network-copy">MEMBRE DU RESEAU ALGOREL</div>
+            <img
+              src="/bleu_rouge.png"
+              alt="Bleu Rouge"
+              className="bleu-rouge-image"
+            />
           </div>
         </div>
-        <div className="status-pill">Powered by the Giustore search API</div>
+
+        <div className="claim-strip">Les professionnels sont la</div>
+
+        <button
+          type="button"
+          className="mobile-nav-toggle"
+          onClick={() => setMenuOpen((current) => !current)}
+          aria-expanded={menuOpen}
+          aria-controls="main-nav"
+        >
+          Menu
+        </button>
+
+        <nav id="main-nav" className={`main-nav ${menuOpen ? 'is-open' : ''}`}>
+          <ul>
+            {navItems.map((item) => (
+              <li
+                key={item}
+                className={item === 'NOS CATALOGUES' ? 'is-highlight' : ''}
+              >
+                <a
+                  href="#"
+                  onClick={() => {
+                    setMenuOpen(false)
+                  }}
+                >
+                  {item}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </header>
 
-      <main className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Search smarter</p>
+      <main className="content">
+        <section className="hero-copy">
           <h1>{headline}</h1>
-          <p className="lead">
-            Type a query, press enter, and get fast, relevant results from your
-            own backend search stack.
+          <p>
+            Saisissez une requete puis obtenez des resultats rapides depuis
+            votre service de recherche.
           </p>
-        </div>
+        </section>
 
         <section className="search-shell">
           <form className="search-bar" onSubmit={handleSubmit}>
-            <div className="search-input">
-              <span className="search-icon" aria-hidden="true">
-                search
-              </span>
-              <input
-                type="search"
-                placeholder="Search for groceries, brands, and staples"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                aria-label="Search Giustore"
-              />
-              {query && (
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={handleClear}
-                  aria-label="Clear search"
-                >
-                  x
-                </button>
-              )}
-            </div>
+            <input
+              type="search"
+              placeholder="Rechercher un produit, une marque, une categorie"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Recherche Giustore"
+            />
             <div className="search-actions">
               <button className="primary" type="submit">
-                Search
-              </button>
-              <button
-                className="ghost"
-                type="button"
-                onClick={() =>
-                  handleSuggestionClick(
-                    suggestedQueries[
-                      Math.floor(Math.random() * suggestedQueries.length)
-                    ],
-                  )
-                }
-              >
-                I'm feeling local
+                Rechercher
               </button>
             </div>
           </form>
-
-          <div className="suggestions">
-            {suggestedQueries.map((item) => (
-              <button
-                key={item}
-                type="button"
-                className="chip"
-                onClick={() => handleSuggestionClick(item)}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
         </section>
 
         <section className="results">
           {status === 'loading' && (
-            <div className="results-state">
-              <div className="loader" aria-hidden="true"></div>
-              <div>Searching your catalog...</div>
-            </div>
+            <div className="results-state">Recherche en cours...</div>
           )}
 
           {status === 'error' && (
             <div className="results-state error">
-              <div className="state-title">We hit a snag.</div>
+              <div className="state-title">Une erreur est survenue.</div>
               <p>{error}</p>
               <p className="state-hint">
-                Verify that the search service is running at{' '}
+                Verifiez que le service est disponible sur{' '}
                 <span className="mono">{SEARCH_ENDPOINT}</span>.
               </p>
             </div>
@@ -215,11 +197,11 @@ function App() {
             <>
               <div className="results-meta">
                 <span>
-                  {results.length} results
-                  {searchTimeMs !== null ? ` in ${searchTimeMs} ms` : ''}
+                  {results.length} resultats
+                  {searchTimeMs !== null ? ` en ${searchTimeMs} ms` : ''}
                 </span>
                 <span className="results-query">
-                  Showing matches for "{trimmedQuery}"
+                  Resultats pour "{trimmedQuery}"
                 </span>
               </div>
 
@@ -237,33 +219,21 @@ function App() {
                             <div className="result-header">
                               <div className="result-title">{item.title}</div>
                               {item.category?.name && (
-                                <span className="pill">
-                                  {item.category.name}
-                                </span>
+                                <span className="pill">{item.category.name}</span>
                               )}
                             </div>
                             <p className="result-description">
                               {item.description ||
-                                'No description available yet.'}
+                                'Aucune description disponible pour le moment.'}
                             </p>
-                            <div className="result-footer">
-                              <span>
-                                Owner:{' '}
-                                <strong>
-                                  {item.owner?.name ?? 'Giustore inventory'}
-                                </strong>
-                              </span>
-                              {item.id && (
-                                <span className="mono">#{item.id}</span>
-                              )}
-                            </div>
+
                           </div>
                           {(youtubeEmbedUrl || item.videoUrl) && (
                             <div className="result-media">
                               {youtubeEmbedUrl ? (
                                 <iframe
                                   src={youtubeEmbedUrl}
-                                  title={`${item.title ?? 'Item'} video`}
+                                  title={`${item.title ?? 'Article'} video`}
                                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                   allowFullScreen
                                 />
@@ -274,7 +244,8 @@ function App() {
                                   preload="metadata"
                                   playsInline
                                 >
-                                  Your browser does not support the video tag.
+                                  Votre navigateur ne prend pas en charge la
+                                  balise video.
                                 </video>
                               )}
                             </div>
@@ -286,20 +257,17 @@ function App() {
                 </div>
               ) : (
                 <div className="results-state empty">
-                  <div className="state-title">No matches found.</div>
-                  <p>Try a different wording or a broader term.</p>
+                  <div className="state-title">Aucun resultat trouve.</div>
+                  <p>Essayez un terme plus large ou une autre formulation.</p>
                 </div>
               )}
             </>
           )}
         </section>
       </main>
-
-      <footer className="footer">
-        Giustore Search - Built for fast, local discovery.
-      </footer>
     </div>
   )
 }
 
 export default App
+
