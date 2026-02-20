@@ -3,7 +3,7 @@ import './App.css'
 
 const API_BASE =
   import.meta.env.VITE_SEARCH_API_BASE ??
-  'http://localhost:8080/search/api/items/search'
+  '/api/items/search'
 const SEARCH_ENDPOINT = API_BASE.replace(/\/$/, '')
 
 const navItems = [
